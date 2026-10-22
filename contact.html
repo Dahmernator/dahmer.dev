@@ -21,26 +21,77 @@
   <main>
 
     <section class="hero">
-      <h1>Contact</h1>
-      <p class="tagline">The best way to reach me is email.</p>
+      <div class="hero-text">
+        <h1>Contact</h1>
+        <p class="tagline">Send me a message and I'll get back to you.</p>
+      </div>
     </section>
 
     <section>
-      <div class="grid">
-        <div class="card">
-          <h3>Email</h3>
-          <p><a href="mailto:robertdahmer22@gmail.com">robertdahmer22@gmail.com</a></p>
-        </div>
-        <div class="card">
-          <h3>GitHub</h3>
-          <p><a href="https://github.com/Dahmernator">github.com/Dahmernator</a></p>
-        </div>
-      </div>
+      <form id="contact-form" class="form">
+        <!-- Get a free access key at https://web3forms.com and paste it below -->
+        <input type="hidden" name="access_key" value="f7e74358-6644-4cbc-9fe8-b3f789991345">
+        <input type="hidden" name="subject" value="New message from dahmer.dev">
+        <!-- Spam trap: real visitors never see or fill this in -->
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" required>
+
+        <label for="email">Your email</label>
+        <input id="email" name="email" type="email" required>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="6" required></textarea>
+
+        <button class="btn primary" type="submit">Send message</button>
+        <p id="form-status" role="status"></p>
+      </form>
+
+      <p>Prefer GitHub? <a href="https://github.com/Dahmernator">github.com/Dahmernator</a></p>
     </section>
 
   </main>
 
   <footer>&copy; 2026 Robert Dahmer</footer>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const status = document.getElementById("form-status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (form.access_key.value.startsWith("YOUR_ACCESS_KEY")) {
+        status.textContent = "The form isn't set up yet (missing access key).";
+        status.className = "error";
+        return;
+      }
+
+      status.textContent = "Sending...";
+      status.className = "";
+
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Accept": "application/json" },
+          body: new FormData(form)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          status.textContent = "Thanks! Your message was sent.";
+          status.className = "ok";
+          form.reset();
+        } else {
+          status.textContent = "Something went wrong. Please try again later.";
+          status.className = "error";
+        }
+      } catch (err) {
+        status.textContent = "Network error. Please try again later.";
+        status.className = "error";
+      }
+    });
+  </script>
 
 </body>
 </html>
